@@ -1,281 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Samsung Product Stock Checker</title>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-    >
-    <style>
-        body { padding: 2rem; }
-        .table td, .table th { vertical-align: middle; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Samsung Product Stock Checker</title>
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+  >
+  <style>
+    body { padding: 2rem; }
+    .table td, .table th { vertical-align: middle; }
+  </style>
 </head>
 <body>
 <div class="container">
-    <h2 class="mb-4">Samsung Product Stock Status</h2>
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-        <tr>
-            <th>Product Code</th>
-            <th>Product Name</th>
-            <th>Stock Status</th>
-            <th>Stock Level</th>
-            <th>Price</th>
-        </tr>
-        </thead>
-        <tbody id="productTableBody"></tbody>
-    </table>
+  <h2 class="mb-4">Samsung Product Stock Status</h2>
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+    <tr>
+      <th>Product Code</th>
+      <th>Product Name</th>
+      <th>Stock Status</th>
+      <th>Stock Level</th>
+      <th>Price</th>
+      <th>Expected Price</th>
+    </tr>
+    </thead>
+    <tbody id="productTableBody"></tbody>
+  </table>
 </div>
 
 <script>
-    const productCodes = [
-  "SM-S936BDBDEUB",
-  "SM-S938BZBHEUB",
-  "SM-S938BZBDEUB",
-  "SM-S938BZBGEUB",
-  "SM-S938BZKDEUB",
-  "SM-S938BZKGEUB",
-  "SM-S938BZKHEUB",
-  "SM-S938BZTDEUB",
-  "SM-S938BZTGEUB",
-  "SM-S938BZTHEUB",
-  "SM-S938BZSDEUB",
-  "SM-S938BZSGEUB",
-  "SM-S938BZSHEUB",
-  "SM-S938BAKDEUB",
-  "SM-S938BAKGEUB",
-  "SM-S938BAKHEUB",
-  "SM-S938BZGDEUB",
-  "SM-S938BZGGEUB",
-  "SM-S938BZGHEUB",
-  "SM-S938BZDDEUB",
-  "SM-S938BZDGEUB",
-  "SM-S938BZDHEUB",
-  "SM-S936BDBDEUB",
-  "SM-S936BDBGEUB",
-  "SM-S936BZSDEUB",
-  "SM-S936BZSGEUB",
-  "SM-S936BLBDEUB",
-  "SM-S936BLBGEUB",
-  "SM-S936BLGDEUB",
-  "SM-S936BLGGEUB",
-  "SM-S936BZKDEUB",
-  "SM-S936BZKGEUB",
-  "SM-S936BZDDEUB",
-  "SM-S936BZDGEUB",
-  "SM-S936BZRDEUB",
-  "SM-S936BZRGEUB",
-  "SM-S931BDBGEUB",
-  "SM-S931BDBHEUB",
-  "SM-S931BDBDEUB",
-  "SM-S931BZSGEUB",
-  "SM-S931BZSHEUB",
-  "SM-S931BZSDEUB",
-  "SM-S931BLBGEUB",
-  "SM-S931BLBHEUB",
-  "SM-S931BLBDEUB",
-  "SM-S931BLGGEUB",
-  "SM-S931BLGHEUB",
-  "SM-S931BLGDEUB",
-  "SM-S931BZKGEUB",
-  "SM-S931BZKHEUB",
-  "SM-S931BZKDEUB",
-  "SM-S931BZDGEUB",
-  "SM-S931BZDHEUB",
-  "SM-S931BZDDEUB",
-  "SM-S931BZRGEUB",
-  "SM-S931BZRHEUB",
-  "SM-S931BZRDEUB",
-  "SM-F741BAKGEUB",
-  "SM-F741BAKHEUB",
-  "SM-F741BZWGEUB",
-  "SM-F741BZWHEUB",
-  "SM-F741BZOGEUB",
-  "SM-F741BZOHEUB",
-  "SM-F741BLBGEUB",
-  "SM-F741BLBHEUB",
-  "SM-F741BLGGEUB",
-  "SM-F741BLGHEUB",
-  "SM-F741BZSGEUB",
-  "SM-F741BZSHEUB",
-  "SM-F741BZYGEUB",
-  "SM-F741BZYHEUB",
-  "SM-F956BAKBEUB",
-  "SM-F956BAKCEUB",
-  "SM-F956BAKNEUB",
-  "SM-F956BDBBEUB",
-  "SM-F956BDBCEUB",
-  "SM-F956BDBNEUB",
-  "SM-F956BLIBEUB",
-  "SM-F956BLICEUB",
-  "SM-F956BLINEUB",
-  "SM-F956BZSBEUB",
-  "SM-F956BZSCEUB",
-  "SM-F956BZSNEUB",
-  "SM-F956BZWBEUB",
-  "SM-F956BZWCEUB",
-  "SM-F956BZWNEUB",
-  "SM-L300NZEAEUB",
-  "SM-L300NZEDWEU",
-  "SM-L300NZGAEUB",
-  "SM-L300NZGDWEU",
-  "SM-L305FZEAEUB",
-  "SM-L305FZGAEUB",
-  "SM-L310NZGAEUB",
-  "SM-L310NZGDWEU",
-  "SM-L310NZSAEUB",
-  "SM-L310NZSDWEU",
-  "SM-L315FZGAEUB",
-  "SM-L315FZSAEUB",
-  "SM-L705FDAAEUB",
-  "SM-L705FZTAEUB",
-  "SM-L705FZWAEUB",
-  "SM-R530NZAAEUB",
-  "SM-R530NZWAEUB",
-  "SM-R630NZAAEUB",
-  "SM-R630NZWAEUB"
-  ];
+  const productCodes = [
+  "SM-F761BZKGEUB",
+  "SM-F761BZKHEUB",
+  "SM-S936BDBDEUB"
+];
 
-      const productNameMap = {
-        "SM-S936BDBDEUB": "Galaxy S22+ Black 256GB",
-        "SM-S938BZBHEUB": "Galaxy S23 Ultra Green 512GB",
-        "SM-S938BZBDEUB": "Galaxy S23 Ultra Green 512GB",
-        "SM-S938BZBDEUB":"Galaxy S25 Ultra - 256 GB - TITANIUM SILVERBLUE",
-            "SM-S938BZBGEUB":"Galaxy S25 Ultra - 256 GB - TITANIUM SILVERBLUE",
-            "SM-S938BZKDEUB":"Galaxy S25 Ultra - 1 TB - TITANIUM SILVERBLUE",
-            "SM-S938BZKGEUB":"Galaxy S25 Ultra - 256 GB - TITANIUM BLACK",
-            "SM-S938BZKHEUB":"Galaxy S25 Ultra - 512 GB - TITANIUM BLACK",
-            "SM-S938BZTDEUB":"Galaxy S25 Ultra - 1 TB - TITANIUM BLACK",
-            "SM-S938BZTGEUB":"Galaxy S25 Ultra - 256 GB - TITANIUM GRAY",
-            "SM-S938BZTHEUB":"Galaxy S25 Ultra - 512 GB - TITANIUM GRAY",
-            "SM-S938BZSDEUB":"Galaxy S25 Ultra - 1 TB - TITANIUM GRAY" ,
-            "SM-S938BZSGEUB":"Galaxy S25 Ultra - 256 GB - TITANIUM WHITESILVER",
-            "SM-S938BZSHEUB":"Galaxy S25 Ultra - 512 GB - TITANIUM WHITESILVER",
-            "SM-S938BAKDEUB":"Galaxy S25 Ultra - 1 TB - TITANIUM WHITESILVER",
-            "SM-S938BAKGEUB":"Galaxy S25 Ultra (Online Exclusive) - 256 GB - TITANIUM JET",
-            "SM-S938BAKHEUB":"Galaxy S25 Ultra (Online Exclusive) - 512 GB - TITANIUM JET",
-            "SM-S938BZGDEUB":"Galaxy S25 Ultra (Online Exclusive) - 1 TB - TITANIUM JETBL",
-            "SM-S938BZGGEUB":"Galaxy S25 Ultra (Online Exclusive) - 256 GB - TITANIUM JAD",
-            "SM-S938BZGHEUB":"Galaxy S25 Ultra (Online Exclusive) - 512 GB - TITANIUM JAD",
-            "SM-S938BZDDEUB":"Galaxy S25 Ultra (Online Exclusive) - 1 TB - TITANIUM JADEG",
-            "SM-S938BZDGEUB":"Galaxy S25 Ultra (Online Exclusive) - 256 GB - TITANIUM PIN",
-            "SM-S938BZDHEUB":"Galaxy S25 Ultra (Online Exclusive) - 512 GB - TITANIUM PIN",
-            "SM-S936BDBDEUB":"Galaxy S25 Ultra (Online Exclusive) - 1 TB - TITANIUM PINKG",
-            "SM-S936BDBGEUB":"Galaxy S25+ - 256 GB - NAVY",
-            "SM-S936BZSDEUB":"Galaxy S25+ - 512 GB - NAVY",
-            "SM-S936BZSGEUB":"Galaxy S25+ - 256 GB - SILVER SHADOW",
-            "SM-S936BLBDEUB":"Galaxy S25+ - 512 GB - SILVER SHADOW",
-            "SM-S936BLBGEUB":"Galaxy S25+ - 256 GB - ICYBLUE",
-            "SM-S936BLGDEUB":"Galaxy S25+ - 512 GB - ICYBLUE",
-            "SM-S936BLGGEUB":"Galaxy S25+ - 256 GB - MINT",
-            "SM-S936BZKDEUB":"Galaxy S25+ - 512 GB - MINT",
-            "SM-S936BZKGEUB":"Galaxy S25+ (Online Exclusive) - 256 GB - BLUEBLACK",
-            "SM-S936BZDDEUB":"Galaxy S25+ (Online Exclusive) - 512 GB - BLUEBLACK",
-            "SM-S936BZDGEUB":"Galaxy S25+ (Online Exclusive) - 256 GB - PINKGOLD" ,
-            "SM-S936BZRDEUB":"Galaxy S25+ (Online Exclusive) - 512 GB - PINKGOLD" ,
-            "SM-S936BZRGEUB":"Galaxy S25+ (Online Exclusive) - 256 GB - CORALRED" ,
-            "SM-S931BDBGEUB":"Galaxy S25+ (Online Exclusive) - 512 GB - CORALRED" ,
-            "SM-S931BDBHEUB":"Galaxy S25 - 256 GB - NAVY",
-            "SM-S931BDBDEUB":"Galaxy S25 - 512 GB - NAVY",
-            "SM-S931BZSGEUB":"Galaxy S25 - 128 GB - NAVY",
-            "SM-S931BZSHEUB":"Galaxy S25 - 256 GB - SILVER SHADOW",
-            "SM-S931BZSDEUB":"Galaxy S25 - 512 GB - SILVER SHADOW",
-            "SM-S931BLBGEUB":"Galaxy S25 - 128 GB - SILVER SHADOW",
-            "SM-S931BLBHEUB":"Galaxy S25 - 256 GB - ICYBLUE",
-            "SM-S931BLBDEUB":"Galaxy S25 - 512 GB - ICYBLUE",
-            "SM-S931BLGGEUB":"Galaxy S25 - 128 GB - ICYBLUE",
-            "SM-S931BLGHEUB":"Galaxy S25 - 256 GB - MINT"   ,
-            "SM-S931BLGDEUB":"Galaxy S25 - 512 GB - MINT"   ,
-            "SM-S931BZKGEUB":"Galaxy S25 - 128 GB - MINT"   ,
-            "SM-S931BZKHEUB":"Galaxy S25 (Online Exclusive) - 256 GB - BLUEBLACK",
-            "SM-S931BZKDEUB":"Galaxy S25 (Online Exclusive) - 512 GB - BLUEBLACK",
-            "SM-S931BZDGEUB":"Galaxy S25 (Online Exclusive) - 128 GB - BLUEBLACK",
-            "SM-S931BZDHEUB":"Galaxy S25 (Online Exclusive) - 256 GB - PINKGOLD" ,
-            "SM-S931BZDDEUB":"Galaxy S25 (Online Exclusive) - 512 GB - PINKGOLD" ,
-            "SM-S931BZRGEUB":"Galaxy S25 (Online Exclusive) - 128 GB - PINKGOLD" ,
-            "SM-S931BZRHEUB":"Galaxy S25 (Online Exclusive) - 256 GB - CORALRED" ,
-            "SM-S931BZRDEUB":"Galaxy S25 (Online Exclusive) - 512 GB - CORALRED" ,
-            "SM-F741BAKGEUB":"Galaxy S25 (Online Exclusive) - 128 GB - COLARRED" ,
-            "SM-F741BAKHEUB":"Galaxy Z Flip6 (Online Exclusive) - 256 GB - CRAFTED BLACK",
-            "SM-F741BZWGEUB":"Galaxy Z Flip6 (Online Exclusive) - 512 GB - CRAFTED BLACK",
-            "SM-F741BZWHEUB":"Galaxy Z Flip6 (Online Exclusive) - 256 GB - WHITE",
-            "SM-F741BZOGEUB":"Galaxy Z Flip6 (Online Exclusive) - 512 GB - WHITE",
-            "SM-F741BZOHEUB":"Galaxy Z Flip6 (Online Exclusive) - 256 GB - PEACH",
-            "SM-F741BLBGEUB":"Galaxy Z Flip6 (Online Exclusive) - 512 GB - PEACH",
-            "SM-F741BLBHEUB":"Galaxy Z Flip6 - 256 GB - BLUE",
-            "SM-F741BLGGEUB":"Galaxy Z Flip6 - 512 GB - BLUE",
-            "SM-F741BLGHEUB":"Galaxy Z Flip6 - 256 GB - MINT",
-            "SM-F741BZSGEUB":"Galaxy Z Flip6 - 512 GB - MINT",
-            "SM-F741BZSHEUB":"Galaxy Z Flip6 - 256 GB - SILVER SHADOW",
-            "SM-F741BZYGEUB":"Galaxy Z Flip6 - 512 GB - SILVER SHADOW",
-            "SM-F741BZYHEUB":"Galaxy Z Flip6 - 256 GB - YELLOW",
-            "SM-F956BAKBEUB":"Galaxy Z Flip6 - 512 GB - YELLOW",
-            "SM-F956BAKCEUB":"Galaxy Z Fold6 (Online Exclusive) - 256 GB - CRAFTED BLACK",
-            "SM-F956BAKNEUB":"Galaxy Z Fold6 (Online Exclusive) - 512 GB - CRAFTED BLACK",
-            "SM-F956BDBBEUB":"Galaxy Z Fold6 (Online Exclusive) - 1 TB - CRAFTED BLACK",
-            "SM-F956BDBCEUB":"Galaxy Z Fold6 - 256 GB - NAVY",
-            "SM-F956BDBNEUB":"Galaxy Z Fold6 - 512 GB - NAVY",
-            "SM-F956BLIBEUB":"Galaxy Z Fold6 - 1 TB - NAVY"  ,
-            "SM-F956BLICEUB":"Galaxy Z Fold6 - 256 GB - PINK",
-            "SM-F956BLINEUB":"Galaxy Z Fold6 - 512 GB - PINK",
-            "SM-F956BZSBEUB":"Galaxy Z Fold6 - 1 TB - PINK"  ,
-            "SM-F956BZSCEUB":"Galaxy Z Fold6 - 256 GB - SILVER SHADOW" ,
-            "SM-F956BZSNEUB":"Galaxy Z Fold6 - 512 GB - SILVER SHADOW" ,
-            "SM-F956BZWBEUB":"Galaxy Z Fold6 - 1 TB - SILVER SHADOW"   ,
-            "SM-F956BZWCEUB":"Galaxy Z Fold6 (Online Exclusive) - 256 GB - WHITE",
-            "SM-F956BZWNEUB":"Galaxy Z Fold6 (Online Exclusive) - 512 GB - WHITE",
-            "SM-L300NZEAEUB":"Galaxy Z Fold6 (Online Exclusive) - 1 TB - WHITE",
-            "SM-L300NZEDWEU":" Galaxy Watch7 (Bluetooth, 40mm) - CREAM",
-            "SM-L300NZGAEUB":" Galaxy Watch7 (Bluetooth, 40mm) - CREAM",
-            "SM-L300NZGDWEU":" Galaxy Watch7 (Bluetooth, 40mm) - GREEN",
-            "SM-L305FZEAEUB":" Galaxy Watch7 (Bluetooth, 40mm) - GREEN",
-            "SM-L305FZGAEUB":" Galaxy Watch7 (LTE, 40mm) - CREAM",
-            "SM-L310NZGAEUB":" Galaxy Watch7 (LTE, 40mm) - GREEN",
-            "SM-L310NZGDWEU":" Galaxy Watch7 (Bluetooth, 44mm) - GREEN",
-            "SM-L310NZSAEUB":" Galaxy Watch7 (Bluetooth, 44mm) - GREEN",
-            "SM-L310NZSDWEU":" Galaxy Watch7 (Bluetooth, 44mm) - SILVER",
-            "SM-L315FZGAEUB":" Galaxy Watch7 (Bluetooth, 44mm) - SILVER",
-            "SM-L315FZSAEUB":" Galaxy Watch7 (LTE, 44mm) - GREEN",
-            "SM-L705FDAAEUB":" Galaxy Watch7 (LTE, 44mm) - SILVER",
-            "SM-L705FZTAEUB":" Galaxy Watch Ultra (LTE, 47mm) - TITANIUM GRAY",
-            "SM-L705FZWAEUB":" Galaxy Watch Ultra (LTE, 47mm) - TITANIUM SILVER",
-            "SM-R530NZAAEUB":" Galaxy Watch Ultra (LTE, 47mm) - TITANIUM WHITE",
-            "SM-R530NZWAEUB":"Galaxy Buds3 - SILVER",    
-            "SM-R630NZAAEUB":"Galaxy Buds3 - WHITE",
-            "SM-R630NZWAEUB":"Galaxy Buds3 Pro - SILVER"
-              };
+  const productInfoMap = {
+  "SM-F761BZKGEUB": {
+    "name": "Galaxy Z Flip7 FE 256 GB BLACK",
+    "expectedPrice": 999
+  },
+  "SM-F761BZKHEUB": {
+    "name": "Galaxy Z Flip7 FE 521 GB BLACK",
+    "expectedPrice": 999
+  },
+  "SM-S936BDBDEUB": {
+    "name": "Galffaxy Z Flip7 FE 521 GB BLACK",
+    "expectedPrice": 949
+  }
+};
 
+  fetch(`https://api.shop.samsung.com/tokocommercewebservices/v2/nl/products?productCodes=${productCodes.join(',')}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("productTableBody");
 
+      data.forEach(product => {
+        const row = document.createElement("tr");
 
-      fetch(`https://api.shop.samsung.com/tokocommercewebservices/v2/nl/products?productCodes=${productCodes.join(',')}`)
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.getElementById("productTableBody");
+        const productInfo = productInfoMap[product.code] || {};
+        const expectedPrice = productInfo.expectedPrice;
+        const actualPrice = product.price?.value;
 
-          data.forEach(product => {
-            const row = document.createElement("tr");
+        let rowClass = "table-danger";
 
-            const statusClass = product.stock?.stockLevelStatus === "inStock" ? "table-success" : "table-danger";
-            row.classList.add(statusClass);
+        if (product.stock?.stockLevelStatus === "inStock") {
+          rowClass = actualPrice === expectedPrice ? "table-success" : "table-danger";
+        } else {
+          rowClass = "table-warning";
+        }
 
-            const productName = productNameMap[product.code] || "(Unknown)";
+        row.classList.add(rowClass);
 
-            row.innerHTML = `
-              <td>${product.code}</td>
-              <td>${productName}</td>
-              <td>${product.stock?.stockLevelStatus || "n/a"}</td>
-              <td>${product.stock?.stockLevel ?? "n/a"}</td>
-              <td>${product.price?.formattedValue || "n/a"}</td>
-            `;
+        const productName = productInfo.name || "(Unknown)";
 
-            tbody.appendChild(row);
-          });
-        })
-        .catch(err => {
-          console.error("Data loading error:", err);
-        });
+        row.innerHTML = `
+          <td>${product.code}</td>
+          <td>${productName}</td>
+          <td>${product.stock?.stockLevelStatus || "n/a"}</td>
+          <td>${product.stock?.stockLevel ?? "n/a"}</td>
+          <td>${product.price?.formattedValue || "n/a"}</td>
+          <td>€ ${expectedPrice ?? "n/a"}</td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    })
+    .catch(err => {
+      console.error("Ошибка загрузки данных:", err);
+    });
 </script>
 </body>
-</html>
+</html>ß
