@@ -2,7 +2,7 @@ import csv
 import json
 
 INPUT_CSV = 'products.csv'
-OUTPUT_HTML = 'product_stock_checker.html'
+OUTPUT_HTML = 'index.html'
 
 product_codes = []
 product_info_map = {}
