@@ -61,8 +61,8 @@ html_template = f"""<!DOCTYPE html>
       <th>Product Name</th>
       <th>Stock Status</th>
       <th>Stock Level</th>
-      <th>Price</th>
-      <th>Expected Price</th>
+      <th>Current Price</th>
+      <th>Initially Briefed Price</th>
       <th>Shipping ETA</th>
     </tr>
     </thead>
