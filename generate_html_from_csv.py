@@ -75,13 +75,13 @@ html_template = f"""<!DOCTYPE html>
 
         const status = product.stock?.stockLevelStatus;
 
-        if (status === "outOfStock") {
+        if (status === "outOfStock") {{
         rowClass = "table-danger";
-        } else if (actualPrice !== expectedPrice) {
+        }} else if (actualPrice !== expectedPrice) {{
         rowClass = "table-warning";
-        } else if (status === "inStock" || status === "preOrder") {
+        }} else if (status === "inStock" || status === "preOrder") {{
         rowClass = "table-success";
-        }
+        }}
 
         row.classList.add(rowClass);
 
