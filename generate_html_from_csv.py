@@ -48,6 +48,7 @@ html_template = f"""<!DOCTYPE html>
       <th>Stock Level</th>
       <th>Price</th>
       <th>Expected Price</th>
+      <th>Shipping ETA</th>
     </tr>
     </thead>
     <tbody id="productTableBody"></tbody>
@@ -62,6 +63,7 @@ html_template = f"""<!DOCTYPE html>
       <th>Stock Level</th>
       <th>Price</th>
       <th>Expected Price</th>
+      <th>Shipping ETA</th>
     </tr>
     </thead>
     <tbody id="productTableBodyBe"></tbody>
@@ -109,6 +111,7 @@ html_template = f"""<!DOCTYPE html>
           <td>${{product.stock?.stockLevel ?? "n/a"}}</td>
           <td>${{product.price?.formattedValue || "n/a"}}</td>
           <td>€ ${{expectedPrice ?? "n/a"}}</td>
+          <td>${{product.shippingETA}}</td>
         `;
 
         tbody.appendChild(row);
@@ -153,6 +156,7 @@ fetch(`https://api.shop.samsung.com/tokocommercewebservices/v2/be/products?produ
           <td>${{product.stock?.stockLevel ?? "n/a"}}</td>
           <td>${{product.price?.formattedValue || "n/a"}}</td>
           <td>€ ${{expectedPrice ?? "n/a"}}</td>
+          <td>${{product.shippingETA}}</td>
         `;
 
         tbody.appendChild(row);
