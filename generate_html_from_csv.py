@@ -38,7 +38,7 @@ html_template = f"""<!DOCTYPE html>
 </head>
 <body>
 <div class="container">
-  <h2 class="mb-4">Samsung Product Stock Status</h2>
+  <h2 class="mb-4">Samsung Product Stock Status - NL</h2>
   <table class="table table-bordered table-hover">
     <thead class="table-dark">
     <tr>
@@ -52,6 +52,21 @@ html_template = f"""<!DOCTYPE html>
     </thead>
     <tbody id="productTableBody"></tbody>
   </table>
+ <h2 class="mb-4">Samsung Product Stock Status - BE</h2>
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+    <tr>
+      <th>Product Code</th>
+      <th>Product Name</th>
+      <th>Stock Status</th>
+      <th>Stock Level</th>
+      <th>Price</th>
+      <th>Expected Price</th>
+    </tr>
+    </thead>
+    <tbody id="productTableBodyBe"></tbody>
+  </table>
+
 </div>
 
 <script>
@@ -102,6 +117,51 @@ html_template = f"""<!DOCTYPE html>
     .catch(err => {{
       console.error("Ошибка загрузки данных:", err);
     }});
+
+fetch(`https://api.shop.samsung.com/tokocommercewebservices/v2/be/products?productCodes=${{productCodes.join(',')}}`)
+    .then(res => res.json())
+    .then(data => {{
+      const tbody = document.getElementById("productTableBodyBe");
+
+      data.forEach(product => {{
+        const row = document.createElement("tr");
+
+        const productInfo = productInfoMap[product.code] || {{}};
+        const expectedPrice = productInfo.expectedPrice;
+        const actualPrice = product.price?.value;
+
+        let rowClass = "table-danger";
+
+        const status = product.stock?.stockLevelStatus;
+
+        if (status === "outOfStock") {{
+        rowClass = "table-danger";
+        }} else if (actualPrice !== expectedPrice) {{
+        rowClass = "table-warning";
+        }} else if (status === "inStock" || status === "preOrder") {{
+        rowClass = "table-success";
+        }}
+
+        row.classList.add(rowClass);
+
+        const productName = productInfo.name || "(Unknown)";
+
+        row.innerHTML = `
+          <td>${{product.code}}</td>
+          <td>${{productName}}</td>
+          <td>${{product.stock?.stockLevelStatus || "n/a"}}</td>
+          <td>${{product.stock?.stockLevel ?? "n/a"}}</td>
+          <td>${{product.price?.formattedValue || "n/a"}}</td>
+          <td>€ ${{expectedPrice ?? "n/a"}}</td>
+        `;
+
+        tbody.appendChild(row);
+      }});
+    }})
+    .catch(err => {{
+      console.error("Ошибка загрузки данных:", err);
+    }});
+
 </script>
 </body>
 </html>"""
