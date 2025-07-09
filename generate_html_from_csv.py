@@ -73,11 +73,15 @@ html_template = f"""<!DOCTYPE html>
 
         let rowClass = "table-danger";
 
-        if (product.stock?.stockLevelStatus === "inStock") {{
-          rowClass = actualPrice === expectedPrice ? "table-success" : "table-danger";
-        }} else {{
-          rowClass = "table-warning";
-        }}
+const status = product.stock?.stockLevelStatus;
+
+if (status === "outOfStock") {
+  rowClass = "table-danger";
+} else if (actualPrice !== expectedPrice) {
+  rowClass = "table-warning";
+} else if (status === "inStock" || status === "preOrder") {
+  rowClass = "table-success";
+}
 
         row.classList.add(rowClass);
 
