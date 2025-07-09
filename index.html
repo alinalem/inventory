@@ -32,27 +32,17 @@
 
 <script>
   const productCodes = [
-  "SM-F761BZKGEUB",
   "SM-F761BZKHEUB",
-  "SM-F761BZWGEUB",
   "SM-F761BZWHEUB",
-  "SM-F766BDBGEUB",
   "SM-F766BDBHEUB",
-  "SM-F766BLGGEUB",
   "SM-F766BLGHEUB",
-  "SM-F766BZKGEUB",
   "SM-F766BZKHEUB",
-  "SM-F766BZRGEUB",
   "SM-F766BZRHEUB",
-  "SM-F966BDBBEUB",
   "SM-F966BDBCEUB",
   "SM-F966BDBNEUB",
-  "SM-F966BLGBEUB",
   "SM-F966BLGCEUB",
-  "SM-F966BZKBEUB",
   "SM-F966BZKCEUB",
   "SM-F966BZKNEUB",
-  "SM-F966BZSBEUB",
   "SM-F966BZSCEUB",
   "SM-L330NDAAEUB",
   "SM-L330NDADWEU",
@@ -79,92 +69,52 @@
 ];
 
   const productInfoMap = {
-  "SM-F761BZKGEUB": {
+  "SM-F761BZKHEUB": {
     "name": "Galaxy Z Flip7 FE 256 GB BLACK",
     "expectedPrice": 999
   },
-  "SM-F761BZKHEUB": {
-    "name": "Galaxy Z Flip7 FE 521 GB BLACK",
-    "expectedPrice": 999
-  },
-  "SM-F761BZWGEUB": {
+  "SM-F761BZWHEUB": {
     "name": "Galaxy Z Flip7 FE 256 GB WHITE",
     "expectedPrice": 999
   },
-  "SM-F761BZWHEUB": {
-    "name": "Galaxy Z Flip7 FE 521 GB WHITE",
-    "expectedPrice": 999
-  },
-  "SM-F766BDBGEUB": {
-    "name": "Galaxy Z Flip7 256 GB BLUESHADOW",
-    "expectedPrice": 1199
-  },
   "SM-F766BDBHEUB": {
-    "name": "Galaxy Z Flip7 521 GB BLUESHADOW",
-    "expectedPrice": 1199
-  },
-  "SM-F766BLGGEUB": {
-    "name": "Galaxy Z Flip7 (Online Exclusive) 256 GB MINT",
+    "name": "Galaxy Z Flip7 512 GB BLUESHADOW",
     "expectedPrice": 1199
   },
   "SM-F766BLGHEUB": {
-    "name": "Galaxy Z Flip7 (Online Exclusive) 521 GB MINT",
-    "expectedPrice": 1199
-  },
-  "SM-F766BZKGEUB": {
-    "name": "Galaxy Z Flip7 256 GB JETBLACK",
+    "name": "Galaxy Z Flip7 (Online Exclusive) 512 GB MINT",
     "expectedPrice": 1199
   },
   "SM-F766BZKHEUB": {
-    "name": "Galaxy Z Flip7 521 GB JETBLACK",
-    "expectedPrice": 1199
-  },
-  "SM-F766BZRGEUB": {
-    "name": "Galaxy Z Flip7 256 GB CORALRED",
+    "name": "Galaxy Z Flip7 512 GB JETBLACK",
     "expectedPrice": 1199
   },
   "SM-F766BZRHEUB": {
-    "name": "Galaxy Z Flip7 521 GB CORALRED",
+    "name": "Galaxy Z Flip7 512 GB CORALRED",
     "expectedPrice": 1199
   },
-  "SM-F966BDBBEUB": {
-    "name": "Galaxy Z Fold7 256 GB BLUESHADOW",
-    "expectedPrice": 2099
-  },
   "SM-F966BDBCEUB": {
-    "name": "Galaxy Z Fold7 521 GB BLUESHADOW",
+    "name": "Galaxy Z Fold7 512 GB BLUESHADOW",
     "expectedPrice": 2099
   },
   "SM-F966BDBNEUB": {
     "name": "Galaxy Z Fold7 1 TB BLUESHADOW",
     "expectedPrice": 2369
   },
-  "SM-F966BLGBEUB": {
-    "name": "Galaxy Z Fold7 (Online Exclusive) 256 GB MINT",
-    "expectedPrice": 2099
-  },
   "SM-F966BLGCEUB": {
     "name": "Galaxy Z Fold7 (Online Exclusive) 521 GB MINT",
     "expectedPrice": 2099
   },
-  "SM-F966BZKBEUB": {
-    "name": "Galaxy Z Fold7 256 GB JETBLACK",
-    "expectedPrice": 2099
-  },
   "SM-F966BZKCEUB": {
-    "name": "Galaxy Z Fold7 521 GB JETBLACK",
+    "name": "Galaxy Z Fold7 512 GB JETBLACK",
     "expectedPrice": 2099
   },
   "SM-F966BZKNEUB": {
     "name": "Galaxy Z Fold7 1 TB JETBLACK",
     "expectedPrice": 2369
   },
-  "SM-F966BZSBEUB": {
-    "name": "Galaxy Z Fold7 (Online Exclusive) 256 GB SILVERSHADOW",
-    "expectedPrice": 2099
-  },
   "SM-F966BZSCEUB": {
-    "name": "Galaxy Z Fold7 (Online Exclusive) 521 GB SILVERSHADOW",
+    "name": "Galaxy Z Fold7 (Online Exclusive) 512 GB SILVERSHADOW",
     "expectedPrice": 2099
   },
   "SM-L330NDAAEUB": {
@@ -271,15 +221,15 @@
 
         let rowClass = "table-danger";
 
-const status = product.stock?.stockLevelStatus;
+        const status = product.stock?.stockLevelStatus;
 
-if (status === "outOfStock") {
-  rowClass = "table-danger";
-} else if (actualPrice !== expectedPrice) {
-  rowClass = "table-warning";
-} else if (status === "inStock" || status === "preOrder") {
-  rowClass = "table-success";
-}
+        if (status === "outOfStock") {
+        rowClass = "table-danger";
+        } else if (actualPrice !== expectedPrice) {
+        rowClass = "table-warning";
+        } else if (status === "inStock" || status === "preOrder") {
+        rowClass = "table-success";
+        }
 
         row.classList.add(rowClass);
 
