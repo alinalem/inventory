@@ -14,6 +14,49 @@
 </head>
 <body>
 <div class="container">
+  <div id="refresh-info" style="
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+">Update interval: 10 min <br>Last update: <span id="last-refresh"></span><br>
+  Next update: <span id="next-refresh"></span>
+</div>
+<script>
+  const REFRESH_INTERVAL_MINUTES = 10;
+  const REFRESH_INTERVAL_MS = REFRESH_INTERVAL_MINUTES * 60 * 1000;
+
+  const lastRefreshEl = document.getElementById('last-refresh');
+  const nextRefreshEl = document.getElementById('next-refresh');
+
+  function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function updateRefreshInfo(startTime) {
+    const now = new Date();
+    const elapsed = now - startTime;
+    const remainingMs = REFRESH_INTERVAL_MS - elapsed;
+    const minutes = Math.floor(remainingMs / 60000);
+    const seconds = Math.floor((remainingMs % 60000) / 1000);
+    nextRefreshEl.textContent = `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
+  }
+
+  const refreshStart = new Date();
+  lastRefreshEl.textContent = formatTime(refreshStart);
+
+  // Timer for time elapsed
+  setInterval(() => updateRefreshInfo(refreshStart), 1000);
+
+  // Autoupdate timer
+  setTimeout(() => location.reload(), REFRESH_INTERVAL_MS);
+</script>
   <h2 class="mb-4">Samsung Product Stock Status - NL</h2>
   <table class="table table-bordered table-hover">
     <thead class="table-dark">
