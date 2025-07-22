@@ -68,6 +68,7 @@
       <th>Current Price</th>
       <th>Initially Briefed Price</th>
       <th>Shipping ETA</th>
+      <th>BackOrder ETA</th>
     </tr>
     </thead>
     <tbody id="productTableBody"></tbody>
@@ -83,6 +84,7 @@
       <th>Current Price</th>
       <th>Initially Briefed Price</th>
       <th>Shipping ETA</th>
+      <th>BackOrder ETA</th>
     </tr>
     </thead>
     <tbody id="productTableBodyBe"></tbody>
@@ -278,7 +280,8 @@
         const productInfo = productInfoMap[product.code] || {};
         const expectedPrice = productInfo.expectedPrice;
         const actualPrice = product.price?.value;
-
+        // const backOrderMessage = product.backOrderMessage?.value || "n/a";
+        const backOrderMessage = product.buyBackPrice?.value || "n/a";
         let rowClass = "table-danger";
 
         const status = product.stock?.stockLevelStatus;
@@ -303,6 +306,7 @@
           <td>${product.price?.formattedValue || "n/a"}</td>
           <td>€ ${expectedPrice ?? "n/a"}</td>
           <td>${product.shippingETA}</td>
+          <td>${product.backOrderMessage ?? ""}</td>
         `;
 
         tbody.appendChild(row);
@@ -348,6 +352,7 @@ fetch(`https://api.shop.samsung.com/tokocommercewebservices/v2/be/products?produ
           <td>${product.price?.formattedValue || "n/a"}</td>
           <td>€ ${expectedPrice ?? "n/a"}</td>
           <td>${product.shippingETA}</td>
+          <td>${product.backOrderMessage ?? ""}</td>
         `;
 
         tbody.appendChild(row);
