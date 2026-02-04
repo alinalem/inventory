@@ -268,8 +268,11 @@
     "expectedPrice": 699
   }
 };
+const url = `https://api.shop.samsung.com/tokocommercewebservices/v2/nl/products?productCodes=${encodeURIComponent(productCodes.join(","))}`;
+// popular free proxy for testing
+const proxied = `https://cors.isomorphic-git.org/${url}`;
 
-  fetch(`https://api.shop.samsung.com/tokocommercewebservices/v2/nl/products?productCodes=${productCodes.join(',')}`)
+  fetch(proxied)
     .then(res => res.json())
     .then(data => {
       const tbody = document.getElementById("productTableBody");
