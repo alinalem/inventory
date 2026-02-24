@@ -104,26 +104,29 @@
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
-  function updateRefreshInfo(startTime) {
+  // Tracks when the last successful fetch completed so the countdown is accurate
+  let cycleStart = new Date();
+
+  function tickCountdown() {
     const now = new Date();
-    const elapsed = now - startTime;
-    const remainingMs = REFRESH_INTERVAL_MS - elapsed;
+    const remainingMs = REFRESH_INTERVAL_MS - (now - cycleStart);
+    if (remainingMs <= 0) {
+      nextRefreshEl.textContent = '0 min 00 sec';
+      return;
+    }
     const minutes = Math.floor(remainingMs / 60000);
     const seconds = Math.floor((remainingMs % 60000) / 1000);
     nextRefreshEl.textContent = `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
   }
 
-  const refreshStart = new Date();
-  lastRefreshEl.textContent = formatTime(refreshStart);
-
-  // Timer for time elapsed
-  setInterval(() => updateRefreshInfo(refreshStart), 1000);
-
-  // Auto-reload after interval
-  setTimeout(() => location.reload(), REFRESH_INTERVAL_MS);
+  // Update countdown every second
+  setInterval(tickCountdown, 1000);
 
   // productInfoMap is provided by the single /products-status response
   let productInfoMap = {};
+
+  // Tracks the ETag from the last successful response for conditional requests
+  let lastETag = null;
 
   // Helper to render a single product row into a given tbody element
   function renderProductRow(tbody, product) {
@@ -186,10 +189,26 @@
     errorBanner.classList.remove('show');
   });
 
-  // Single request: fetches inventory config + Samsung data for all regions in one shot
-  (async function run() {
+  // Fetches the latest data and re-renders the tables.
+  // Skips re-rendering if the server returns 304 (data unchanged).
+  async function updateDashboard() {
     try {
-      const resp = await fetch(`${PROXY_BASE_URL}/products-status?regions=nl,be`);
+      const headers = {};
+      if (lastETag) {
+        headers['If-None-Match'] = lastETag;
+      }
+
+      const resp = await fetch(`${PROXY_BASE_URL}/products-status?regions=nl,be`, { headers });
+
+      // Reset the cycle clock and update "Last refresh" on every completed fetch
+      cycleStart = new Date();
+      lastRefreshEl.textContent = formatTime(cycleStart);
+
+      if (resp.status === 304) {
+        console.log('Data unchanged (304) — skipping re-render');
+        return;
+      }
+
       const contentType = resp.headers.get('content-type') || '';
       const isJson = contentType.includes('application/json');
       const data = isJson ? await resp.json() : null;
@@ -201,6 +220,10 @@
         return;
       }
 
+      // Store ETag for the next conditional request
+      const etag = resp.headers.get('etag');
+      if (etag) lastETag = etag;
+
       productInfoMap = data.productInfoMap || {};
       console.log(`Loaded ${Object.keys(productInfoMap).length} products from inventory`);
 
@@ -210,7 +233,13 @@
       showError('Failed to fetch product data');
       console.error('Fetch error', err);
     }
-  })();
+  }
+
+  // Initial load
+  updateDashboard();
+
+  // Periodic refresh without full page reload
+  setInterval(updateDashboard, REFRESH_INTERVAL_MS);
 
 </script>
 </body>
