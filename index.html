@@ -10,7 +10,22 @@
   <style>
     body { padding: 2rem; }
     .table td, .table th { vertical-align: middle; }
-    #error-banner { display:none; }
+    #error-banner {
+      display: none !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 1050 !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      padding: 1rem !important;
+      visibility: hidden !important;
+    }
+    #error-banner.show {
+      display: flex !important;
+      visibility: visible !important;
+    }
   </style>
 </head>
 <body>
@@ -30,7 +45,10 @@
   Next update: <span id="next-refresh"></span>
 </div>
 
-  <div id="error-banner" class="alert alert-danger" role="alert"></div>
+  <div id="error-banner" class="alert alert-danger d-flex align-items-start justify-content-between" role="alert" style="display: none !important; visibility: hidden !important;">
+    <div id="error-message"></div>
+    <button type="button" class="btn-close" aria-label="Close" id="errorCloseBtn"></button>
+  </div>
 
   <h2 class="mb-4">Samsung Product Stock Status - NL</h2>
   <table class="table table-bordered table-hover">
@@ -65,16 +83,22 @@
     <tbody id="productTableBodyBe"></tbody>
   </table>
 
+
 </div>
 
 <script>
-  // ...existing code...
+  // Backend base URL (configurable)
+  const PROXY_BASE_URL = "https://samsung-proxy.onrender.com";
+  // const PROXY_BASE_URL = "http://localhost:3000";
+
   const REFRESH_INTERVAL_MINUTES = 10;
   const REFRESH_INTERVAL_MS = REFRESH_INTERVAL_MINUTES * 60 * 1000;
 
   const lastRefreshEl = document.getElementById('last-refresh');
   const nextRefreshEl = document.getElementById('next-refresh');
   const errorBanner = document.getElementById('error-banner');
+  const errorMessageEl = document.getElementById('error-message');
+  const errorCloseBtn = document.getElementById('errorCloseBtn');
 
   function formatTime(date) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -95,185 +119,11 @@
   // Timer for time elapsed
   setInterval(() => updateRefreshInfo(refreshStart), 1000);
 
-  // Autoupdate timer
+  // Auto-reload after interval
   setTimeout(() => location.reload(), REFRESH_INTERVAL_MS);
 
-  // Product list and metadata (copied from existing file)
-  const productCodes = [
-  "SM-F761BZKHEUB",
-  "SM-F761BZWHEUB",
-  "SM-F766BDBHEUB",
-  "SM-F766BLGHEUB",
-  "SM-F766BZKHEUB",
-  "SM-F766BZRHEUB",
-  "SM-F966BDBCEUB",
-  "SM-F966BDBNEUB",
-  "SM-F966BLGCEUB",
-  "SM-F966BZKCEUB",
-  "SM-F966BZKNEUB",
-  "SM-F966BZSCEUB",
-  "SM-L330NDAAEUB",
-  "SM-L330NDADWEU",
-  "SM-L330NZSAEUB",
-  "SM-L330NZSDWEU",
-  "SM-L320NDAAEUB",
-  "SM-L320NDADWEU",
-  "SM-L320NZSAEUB",
-  "SM-L320NZSDWEU",
-  "SM-L335FDAAEUB",
-  "SM-L335FZSAEUB",
-  "SM-L325FDAAEUB",
-  "SM-L325FZSAEUB",
-  "SM-L500NZKAEUB",
-  "SM-L500NZKDWEU",
-  "SM-L500NZWAEUB",
-  "SM-L500NZWDWEU",
-  "SM-L505FZKAEUB",
-  "SM-L505FZWAEUB",
-  "SM-L705FZB2EUB",
-  "SM-L705FZA2EUB",
-  "SM-L705FAW2EUB",
-  "SM-L705FZS2EUB"
-];
-
-  const productInfoMap = {
-  "SM-F761BZKHEUB": {
-    "name": "Galaxy Z Flip7 FE 256 GB BLACK",
-    "expectedPrice": 999
-  },
-  "SM-F761BZWHEUB": {
-    "name": "Galaxy Z Flip7 FE 256 GB WHITE",
-    "expectedPrice": 999
-  },
-  "SM-F766BDBHEUB": {
-    "name": "Galaxy Z Flip7 512 GB BLUESHADOW",
-    "expectedPrice": 1199
-  },
-  "SM-F766BLGHEUB": {
-    "name": "Galaxy Z Flip7 (Online Exclusive) 512 GB MINT",
-    "expectedPrice": 1199
-  },
-  "SM-F766BZKHEUB": {
-    "name": "Galaxy Z Flip7 512 GB JETBLACK",
-    "expectedPrice": 1199
-  },
-  "SM-F766BZRHEUB": {
-    "name": "Galaxy Z Flip7 512 GB CORALRED",
-    "expectedPrice": 1199
-  },
-  "SM-F966BDBCEUB": {
-    "name": "Galaxy Z Fold7 512 GB BLUESHADOW",
-    "expectedPrice": 2099
-  },
-  "SM-F966BDBNEUB": {
-    "name": "Galaxy Z Fold7 1 TB BLUESHADOW",
-    "expectedPrice": 2369
-  },
-  "SM-F966BLGCEUB": {
-    "name": "Galaxy Z Fold7 (Online Exclusive) 521 GB MINT",
-    "expectedPrice": 2099
-  },
-  "SM-F966BZKCEUB": {
-    "name": "Galaxy Z Fold7 512 GB JETBLACK",
-    "expectedPrice": 2099
-  },
-  "SM-F966BZKNEUB": {
-    "name": "Galaxy Z Fold7 1 TB JETBLACK",
-    "expectedPrice": 2369
-  },
-  "SM-F966BZSCEUB": {
-    "name": "Galaxy Z Fold7 (Online Exclusive) 512 GB SILVERSHADOW",
-    "expectedPrice": 2099
-  },
-  "SM-L330NDAAEUB": {
-    "name": "Galaxy Watch8 (Bluetooth, 44 mm)  GRAPHITE",
-    "expectedPrice": 409
-  },
-  "SM-L330NDADWEU": {
-    "name": "Galaxy Watch8 (Bluetooth, 44 mm)  GRAPHITE",
-    "expectedPrice": 359
-  },
-  "SM-L330NZSAEUB": {
-    "name": "Galaxy Watch8 (Bluetooth, 44 mm)  SILVER",
-    "expectedPrice": 409
-  },
-  "SM-L330NZSDWEU": {
-    "name": "Galaxy Watch8 (Bluetooth, 44 mm)  SILVER",
-    "expectedPrice": 359
-  },
-  "SM-L320NDAAEUB": {
-    "name": "Galaxy Watch8 (Bluetooth, 40 mm)  GRAPHITE",
-    "expectedPrice": 379
-  },
-  "SM-L320NDADWEU": {
-    "name": "Galaxy Watch8 (Bluetooth, 40 mm)  GRAPHITE",
-    "expectedPrice": 329
-  },
-  "SM-L320NZSAEUB": {
-    "name": "Galaxy Watch8 (Bluetooth, 40 mm)  SILVER",
-    "expectedPrice": 379
-  },
-  "SM-L320NZSDWEU": {
-    "name": "Galaxy Watch8 (Bluetooth, 40 mm)  SILVER",
-    "expectedPrice": 329
-  },
-  "SM-L335FDAAEUB": {
-    "name": "Galaxy Watch8 (LTE, 44 mm)  GRAPHITE",
-    "expectedPrice": 459
-  },
-  "SM-L335FZSAEUB": {
-    "name": "Galaxy Watch8 (LTE, 44 mm)  SILVER",
-    "expectedPrice": 459
-  },
-  "SM-L325FDAAEUB": {
-    "name": "Galaxy Watch8 (LTE, 40 mm)  GRAPHITE",
-    "expectedPrice": 429
-  },
-  "SM-L325FZSAEUB": {
-    "name": "Galaxy Watch8 (LTE, 40 mm)  SILVER",
-    "expectedPrice": 429
-  },
-  "SM-L500NZKAEUB": {
-    "name": "Galaxy Watch8 Classic (Bluetooth, 46mm)  BLACK",
-    "expectedPrice": 529
-  },
-  "SM-L500NZKDWEU": {
-    "name": "Galaxy Watch8 Classic (Bluetooth, 46mm)  BLACK",
-    "expectedPrice": 469
-  },
-  "SM-L500NZWAEUB": {
-    "name": "Galaxy Watch8 Classic (Bluetooth, 46mm)  WHITE",
-    "expectedPrice": 529
-  },
-  "SM-L500NZWDWEU": {
-    "name": "Galaxy Watch8 Classic (Bluetooth, 46mm)  WHITE",
-    "expectedPrice": 469
-  },
-  "SM-L505FZKAEUB": {
-    "name": "Galaxy Watch8 Classic (LTE, 46mm)  BLACK",
-    "expectedPrice": 579
-  },
-  "SM-L505FZWAEUB": {
-    "name": "Galaxy Watch8 Classic (LTE, 46mm)  WHITE",
-    "expectedPrice": 579
-  },
-  "SM-L705FZB2EUB": {
-    "name": "Galaxy Watch Ultra (2025) (LTE, 47mm)  TITANIUMBLUE",
-    "expectedPrice": 699
-  },
-  "SM-L705FZA2EUB": {
-    "name": "Galaxy Watch Ultra (2025) (LTE, 47mm)  TITANIUMGRAY",
-    "expectedPrice": 699
-  },
-  "SM-L705FAW2EUB": {
-    "name": "Galaxy Watch Ultra (2025) (LTE, 47mm)  TITANIUMWHITE",
-    "expectedPrice": 699
-  },
-  "SM-L705FZS2EUB": {
-    "name": "Galaxy Watch Ultra (2025) (LTE, 47mm)  TITANIUMSILVER",
-    "expectedPrice": 699
-  }
-};
+  // productInfoMap is provided by the single /products-status response
+  let productInfoMap = {};
 
   // Helper to render a single product row into a given tbody element
   function renderProductRow(tbody, product) {
@@ -313,63 +163,53 @@
     tbody.appendChild(row);
   }
 
-  // Fetch via our proxy endpoint for a given region and render into tbody
-  async function fetchAndRender(region, tbodyId) {
+  function renderRegion(tbodyId, regionData) {
     const tbody = document.getElementById(tbodyId);
-    tbody.innerHTML = ''; // clear
-
-    if (!Array.isArray(productCodes) || productCodes.length === 0) {
-      console.warn('No product codes to fetch');
+    tbody.innerHTML = '';
+    if (!regionData || !regionData.ok) {
+      showError(regionData?.error || `Failed to load region data`);
       return;
     }
-    if (productCodes.length > 500) {
-      showError('Too many product codes (max 500)');
+    if (!Array.isArray(regionData.products)) {
+      showError('Unexpected response shape from proxy');
       return;
     }
+    regionData.products.forEach(product => renderProductRow(tbody, product));
+  }
 
+  function showError(message) {
+    errorMessageEl.textContent = message;
+    errorBanner.classList.add('show');
+  }
+
+  errorCloseBtn.addEventListener('click', () => {
+    errorBanner.classList.remove('show');
+  });
+
+  // Single request: fetches inventory config + Samsung data for all regions in one shot
+  (async function run() {
     try {
-      const resp = await fetch('https://samsung-proxy.onrender.com/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productCodes, region })
-      });
-
+      const resp = await fetch(`${PROXY_BASE_URL}/products-status?regions=nl,be`);
       const contentType = resp.headers.get('content-type') || '';
       const isJson = contentType.includes('application/json');
-      const data = isJson ? await resp.json() : await resp.text();
+      const data = isJson ? await resp.json() : null;
 
       if (!resp.ok) {
-        const msg = isJson && data && data.error ? data.error : `Upstream error: ${resp.status}`;
+        const msg = data?.error || `Error: ${resp.status}`;
         showError(msg);
-        console.error('Upstream error', resp.status, data);
+        console.error('products-status error', resp.status, data);
         return;
       }
 
-      // Expecting an array of products
-      if (!Array.isArray(data)) {
-        showError('Unexpected response shape from proxy');
-        console.error('Unexpected response body', data);
-        return;
-      }
+      productInfoMap = data.productInfoMap || {};
+      console.log(`Loaded ${Object.keys(productInfoMap).length} products from inventory`);
 
-      data.forEach(product => renderProductRow(tbody, product));
+      renderRegion('productTableBody', data.regions?.nl);
+      renderRegion('productTableBodyBe', data.regions?.be);
     } catch (err) {
       showError('Failed to fetch product data');
       console.error('Fetch error', err);
     }
-  }
-
-  function showError(message) {
-    errorBanner.textContent = message;
-    errorBanner.style.display = 'block';
-  }
-
-  // Kick off both region fetches in parallel and render
-  (async function run() {
-    await Promise.all([
-      fetchAndRender('nl', 'productTableBody'),
-      fetchAndRender('be', 'productTableBodyBe')
-    ]);
   })();
 
 </script>
