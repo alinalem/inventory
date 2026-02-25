@@ -134,11 +134,11 @@
 
     const productInfo = productInfoMap[product.code] || {};
     const expectedPrice = productInfo.expectedPrice;
-    const actualPrice = product.price?.value;
+    const actualPrice = product.f_price;
     const backOrderMessage = product.backOrderMessage?.value ?? product.buyBackPrice?.value ?? "";
 
     let rowClass = 'table-danger';
-    const status = product.stock?.stockLevelStatus;
+    const status = product.stockLevelStatus;
 
     if (status === 'outOfStock') {
       rowClass = 'table-danger';
@@ -150,14 +150,14 @@
 
     row.classList.add(rowClass);
 
-    const productName = productInfo.name || '(Unknown)';
+    const productName = product.displayName || productInfo.name || '(Unknown)';
 
     row.innerHTML = `
       <td>${product.code}</td>
       <td>${productName}</td>
-      <td>${product.stock?.stockLevelStatus || 'n/a'}</td>
-      <td>${product.stock?.stockLevel ?? 'n/a'}</td>
-      <td>${product.price?.formattedValue || 'n/a'}</td>
+      <td>${product.stockLevelStatus || 'n/a'}</td>
+      <td>${product.stockLevel ?? 'n/a'}</td>
+      <td>${product.f_price_display || 'n/a'}</td>
       <td>€ ${expectedPrice ?? 'n/a'}</td>
       <td>${product.shippingETA ?? ''}</td>
       <td>${backOrderMessage}</td>
