@@ -42,8 +42,8 @@
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
   z-index: 1000;
 ">Update interval: 10 min <br>Last update: <span id="last-refresh"></span><br>
-  Next update: <span id="next-refresh"></span>
-</div>
+    Next update: <span id="next-refresh"></span>
+  </div>
 
   <div id="error-banner" class="alert alert-danger d-flex align-items-start justify-content-between" role="alert" style="display: none !important; visibility: hidden !important;">
     <div id="error-message"></div>
@@ -66,7 +66,7 @@
     </thead>
     <tbody id="productTableBody"></tbody>
   </table>
- <h2 class="mb-4">Samsung Product Stock Status - BE</h2>
+  <h2 class="mb-4">Samsung Product Stock Status - BE</h2>
   <table class="table table-bordered table-hover">
     <thead class="table-dark">
     <tr>
@@ -88,8 +88,8 @@
 
 <script>
   // Backend base URL (configurable)
-  const PROXY_BASE_URL = "https://samsung-proxy.onrender.com";
-  // const PROXY_BASE_URL = "http://localhost:3000";
+  // const PROXY_BASE_URL = "https://samsung-proxy.onrender.com";
+  const PROXY_BASE_URL = "http://localhost:3000";
 
   const REFRESH_INTERVAL_MINUTES = 10;
   const REFRESH_INTERVAL_MS = REFRESH_INTERVAL_MINUTES * 60 * 1000;
@@ -135,7 +135,10 @@
     const productInfo = productInfoMap[product.code] || {};
     const expectedPrice = productInfo.expectedPrice;
     const actualPrice = product.f_price;
-    const backOrderMessage = product.backOrderMessage?.value ?? product.buyBackPrice?.value ?? "";
+    const backOrderRaw = product.backOrderMessage ?? product.buyBackPrice ?? null;
+    const backOrderMessage = (backOrderRaw && typeof backOrderRaw === 'object')
+      ? (backOrderRaw.value ?? '')
+      : (backOrderRaw ?? '');
 
     let rowClass = 'table-danger';
     const status = product.stockLevelStatus;
